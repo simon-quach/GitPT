@@ -1,11 +1,16 @@
 /*
-Summarize one file through path
-Input: Owner Name, Repo Name, Path, Repo UUID
-Output: Summarization of github file at path, File UUID
-What it does: 
-Calls OpenAI API to summarize the github file
-Creates a UUID for this file
-Stores path, summary, and original contents in firebase under project UUID
+Embedding: Generate an embedding based on data
+Input: Text Data
+Output: Embeddings
+What it does:
+Calls OpenAI API to create embeddings based on the text data
 */
+const embedding = async (openai, data) => {
+  const response = await openai.createEmbedding({
+    model: 'text-embedding-ada-002',
+    input: data,
+  })
+  return response.data.data[0].embedding
+}
 
-const axios = require('axios')
+module.exports = embedding
