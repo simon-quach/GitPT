@@ -8,6 +8,12 @@ dotenv.config()
 router.use(express.json())
 router.use(cors())
 
+// Milvus Database Setup
+const {MilvusClient, DataType, MetricType} = require('@zilliz/milvus2-sdk-node')
+const config = require('../config.js')
+const {uri, user, password, secure} = config
+const milvusClient = new MilvusClient(uri, secure, user, password, secure)
+
 // OpenAI API
 const {Configuration, OpenAIApi} = require('openai')
 const configuration = new Configuration({
