@@ -21,7 +21,7 @@ const configuration = new Configuration({
 })
 const openai = new OpenAIApi(configuration)
 
-// Github API
+// Github API 
 const {Octokit} = require('@octokit/rest')
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
