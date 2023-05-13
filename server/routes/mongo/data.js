@@ -1,12 +1,37 @@
 import mongoose from 'mongoose'
+import {v4 as uuidv4} from 'uuid'
 
-// SCHEMA FOR MONGODB
-const Data = new mongoose.Schema({
-  name: {type: String, required: true},
-  prompt: {type: String, required: true},
-  photo: {type: String, required: true},
+// SCHEMA FOR files
+const FileDataSchema = new mongoose.Schema({
+  _id: {type: String, default: uuidv4},
+  path: {
+    type: String,
+    required: true,
+  },
+  summary: {
+    type: String,
+    required: true,
+  },
+  contents: {
+    type: String,
+    required: true,
+  },
+  embedding: {
+    type: [Number],
+    required: true,
+  },
 })
 
-const DataSchema = mongoose.model('Data', Data)
+// Repsitory Schema
+// Define the Repository schema
+const RepositorySchema = new mongoose.Schema({
+  _id: {type: String, default: uuidv4},
+  files: {
+    type: Map,
+    of: FileDataSchema,
+  },
+})
 
-export default DataSchema
+const Repository = mongoose.model('Repository', RepositorySchema)
+
+module.exports = Repository

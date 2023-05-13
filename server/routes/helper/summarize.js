@@ -7,18 +7,12 @@ Calls OpenAI API to summarize the github file
 Creates a UUID for this file
 Stores path, summary, and original contents in mongodb under repository UUID
 */
-const summarize = async (openai, octokit, owner, repo, path, repoUUID) => {
-  const gitResponse = await octokit.request(
-    'GET /repos/{owner}/{repo}/contents/{path}',
-    {
-      owner: owner,
-      repo: repo,
-      path: path,
-      headers: {
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-    },
-  )
+const summarize = async (openai, octokit, owner, repo, path) => {
+  const gitReponse = await octokit.rest.repos.getContent({
+    owner: owner,
+    repo: repo,
+    path: path,
+  })
   const contents = Buffer.from(gitResponse.data.content, 'base64').toString()
   const messages = [
     {
@@ -32,3 +26,5 @@ const summarize = async (openai, octokit, owner, repo, path, repoUUID) => {
   })
   return response.data.choices[0].text
 }
+
+module.exports = summarize
