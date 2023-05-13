@@ -1,6 +1,7 @@
 import "./globals.css";
 
 import Image from "next/image";
+import ThreeD from "./components/ThreeD";
 
 export const metadata = {
   title: "GitPT",
@@ -18,6 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-[#1B1C1E] text-[#c8c8c8] font-montserrat">
+      <div className="fixed z-[-1]">
+          <ThreeD />
+        </div>
         <nav className="flex h-[100px] text-[14px] items-center px-[3rem] justify-between">
           <Image
             src="./gitpt-logo.svg"
@@ -41,6 +45,8 @@ export default function RootLayout({
             </div>
           </div>
         </nav>
+        
+        
         {children}
       </body>
     </html>
