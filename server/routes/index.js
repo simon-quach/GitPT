@@ -1,6 +1,25 @@
 var express = require('express')
 var router = express.Router()
+var cors = require('cors')
+var dotenv = require('dotenv')
+dotenv.config()
+
+// Middleware
 router.use(express.json())
+router.use(cors())
+
+// OpenAI API
+const {Configuration, OpenAIApi} = require('openai')
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_TOKEN,
+})
+const openai = new OpenAIApi(configuration)
+
+// Github API
+const {Octokit} = require('@octokit/rest')
+const octokit = new Octokit({
+  auth: process.env.GITHUB_TOKEN,
+})
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
