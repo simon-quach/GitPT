@@ -6,8 +6,11 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@octokit/core": "^4.2.0",
+    "@zilliz/milvus2-sdk-node": "^2.2.10",
     "axios": "^1.4.0",
     "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.0.3",
     "express": "~4.16.1",
