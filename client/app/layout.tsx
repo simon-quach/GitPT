@@ -1,6 +1,8 @@
 import "./globals.css";
 
 import Image from "next/image";
+import Link from "next/link";
+
 import ThreeD from "./components/ThreeD";
 
 export const metadata = {
@@ -19,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-[#1B1C1E] text-[#c8c8c8] font-montserrat">
-      <div className="fixed z-[-1]">
+        <div className="fixed z-[-1]">
           <ThreeD />
         </div>
         <nav className="flex h-[100px] text-[14px] items-center px-[3rem] justify-between">
@@ -31,22 +33,27 @@ export default function RootLayout({
             className="cursor-pointer text-white"
           />
           <div className="flex gap-[3rem] items-center">
-            <div className="cursor-pointer hover:text-white transition-all">
+            <Link
+              href="/"
+              className="cursor-pointer hover:text-white transition-all"
+            >
               Home
-            </div>
-            <div className="cursor-pointer hover:text-white transition-all">
+            </Link>
+            <Link
+              href="/about"
+              className="cursor-pointer hover:text-white transition-all"
+            >
               About
-            </div>
+            </Link>
             <div className="cursor-pointer hover:text-white transition-all">
               Services
             </div>
-            <div className="font-bold bg-white text-[#1B1C1E] px-[1.5rem] py-[1rem] rounded-md cursor-pointer hover:bg-[#1B1C1E] hover:text-white border-[1px] transition-all">
+            <div className="font-bold bg-white text-[#1B1C1E] px-[1.5rem] py-[1rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all">
               Get Started
             </div>
           </div>
         </nav>
-        
-        
+
         {children}
       </body>
     </html>
