@@ -9,4 +9,4 @@ const connectDB = (url) => {
     .catch((err) => console.log(err))
 }
 
-export default connectDB
+module.exports = connectDB

@@ -7,7 +7,7 @@ Calls OpenAI API to summarize the github file
 Creates a UUID for this file
 Stores path, summary, and original contents in mongodb under repository UUID
 */
-const summarize = async (openai, octokit, owner, repo, path, repoUUID) => {
+const summarize = async (openai, octokit, owner, repo, path) => {
   const gitReponse = await octokit.rest.repos.getContent({
     owner: owner,
     repo: repo,
@@ -26,3 +26,5 @@ const summarize = async (openai, octokit, owner, repo, path, repoUUID) => {
   })
   return response.data.choices[0].text
 }
+
+module.exports = summarize

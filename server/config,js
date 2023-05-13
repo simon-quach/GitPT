@@ -1,8 +1,0 @@
-const config = {
-  uri: 'https://in01-b6c8e052fce6993.gcp-us-west1.vectordb.zillizcloud.com:443',
-  user: 'testuser',
-  password: 'Testuser12',
-  secure: 'True',
-}
-
-module.exports = config
