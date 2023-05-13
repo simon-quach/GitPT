@@ -4,8 +4,9 @@ var cors = require('cors')
 var dotenv = require('dotenv')
 dotenv.config()
 
-
-
+const extractNameAndProject = require('./helper/getinfo.js');
+const summarize = require('./helper/summarize.js');
+console.log(summarize)
 // Middleware
 router.use(express.json())
 router.use(cors())
@@ -45,4 +46,38 @@ router.post('/embed', async function (req, res, next) {
   }
 })
 
+router.post('/github', (req, res) => {
+  try {
+    const url = req.body.url; // Assuming the URL is passed in the request body
+    console.log(url)
+    // Call the extractNameAndProject function
+    const result = extractNameAndProject(url);
+
+    // Send the result as the response
+    res.json(result);
+  } catch (error) {
+    // Handle the error if an invalid GitHub URL is provided
+    res.status(400).json({ error: 'Invalid GitHub URL' });
+  }
+});
+
+router.post('/summarize', async (req, res) => {
+  try {
+    const owner = req.body.owner; // Assuming the owner is passed in the request body
+    const repo = req.body.repo; // Assuming the repo is passed in the request body
+    const path = req.body.path; // Assuming the path is passed in the request body
+
+    // Call the summarize function
+    const summary = await summarize(openai, octokit, owner, repo, path);
+
+    // Send the summary as the response
+    res.send(summary);
+  } catch (error) {
+    console.log(error)
+    // Handle any errors that occurred during the process
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router
+

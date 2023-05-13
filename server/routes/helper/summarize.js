@@ -8,12 +8,15 @@ Creates a UUID for this file
 Stores path, summary, and original contents in mongodb under repository UUID
 */
 const summarize = async (openai, octokit, owner, repo, path) => {
-  const gitReponse = await octokit.rest.repos.getContent({
+
+  const gitResponse = await octokit.rest.repos.getContent({
     owner: owner,
     repo: repo,
     path: path,
   })
+
   const contents = Buffer.from(gitResponse.data.content, 'base64').toString()
+
   const messages = [
     {
       role: 'user',
@@ -24,7 +27,8 @@ const summarize = async (openai, octokit, owner, repo, path) => {
     model: 'gpt-3.5-turbo',
     messages: messages,
   })
-  return response.data.choices[0].text
+
+  return response.data.choices[0].message.content
 }
 
 module.exports = summarize
