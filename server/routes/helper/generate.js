@@ -1,23 +1,37 @@
-const getdocs = require("./getdocs.js");
+const getdocs = require('./getdocs.js')
+const embedding = require('./embedding.js')
+const {queryMilvus} = require('./milvus.js')
 
-const generate = async (instance, question, repoUUID) => {
-  const query = { _id: repoUUID };
-  const repository = await instance.findOne(query);
+const generate = async (openai, mongo, milvus, question, repoUUID) => {
+  // Create embedding for question
+  const vector = await embedding(openai, question)
 
-  const question = [
+  // Query Milvus for similar documents
+  const results = await queryMilvus(milvus, vector, repoUUID)
+
+  // Get the fileUUIDs from the results
+  const fileUUIDs = results.map((result) => result.fileUUID)
+
+  console.log(fileUUIDs)
+  // Get the contents of the files
+  const contents = await getdocs(mongo, repoUUID, fileUUIDs)
+
+  // Generate summary
+  const combined = contents.join('\n\n')
+
+  const message = [
     {
-      role: "user",
-      content: `Summarize this code.\n\nOriginal file contents:\n\n${contents}`,
+      role: 'user',
+      content: `${question}\n\nHere are some documents that might help answer the question, use them if they relate to the problem:\n\n${combined}`,
     },
-  ];
+  ]
 
   const response = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: question,
-  });
+    model: 'gpt-3.5-turbo',
+    messages: message,
+  })
 
-  return {
-    summary: response.data.choices[0].message.content,
-    original: contents,
-  };
-};
+  return response.data.choices[0].message.content
+}
+
+module.exports = generate
