@@ -4,7 +4,7 @@ import Clipboard from '../../assets/icons/clipboard.svg'
 import Github from '../../assets/icons/github.svg'
 import Image from 'next/image'
 import Router from 'next/router'
-import {use, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import axios, {AxiosResponse} from 'axios'
 
 interface PathObject {
@@ -55,12 +55,21 @@ function generateTree(paths: PathObject[]): {[key: string]: TreeNode} {
   return tree
 }
 
+const emptyFileObject: FileObject = {
+  _id: '',
+  path: '',
+  fullpath: '',
+  summary: '',
+  contents: '',
+  embedding: [0],
+}
+
 const Repository = () => {
   const {id} = Router.query
   const [tree, setTree] = useState<Tree>({})
   const [currentPath, setCurrentPath] = useState('')
   const [fileType, setFileType] = useState('directory')
-  const [fileContents, setFileContents] = useState<FileObject>({})
+  const [fileContents, setFileContents] = useState<FileObject>(emptyFileObject)
   let keys = currentPath.split('/')
 
   function getLeafObject(keys: string[]) {
@@ -100,7 +109,7 @@ const Repository = () => {
           })
       } else {
         setFileType('directory')
-        setFileContents({})
+        setFileContents(emptyFileObject)
       }
     }
   }, [currentPath])
