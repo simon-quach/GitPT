@@ -54,6 +54,22 @@ const traverse = async (
         mongoData = mongoData.concat(subdirMongoData)
       } catch (err) {
         console.log(err)
+        if (err.response.status === 429) {
+          // If we hit the rate limit, wait 10seconds and try again
+          await new Promise((resolve) => setTimeout(resolve, 10000))
+          const {milvusData: subdirMilvusData, mongoData: subdirMongoData} =
+            await traverse(
+              openai,
+              octokit,
+              instance,
+              owner,
+              repo,
+              item.path,
+              commitSha,
+            )
+          milvusData = milvusData.concat(subdirMilvusData)
+          mongoData = mongoData.concat(subdirMongoData)
+        }
         milvusData = milvusData.concat([])
         mongoData = mongoData.concat([])
       }
@@ -71,7 +87,6 @@ const traverse = async (
         repo,
         item.path,
       )
-
       // Call the embedding function
       const vector = await embedding(openai, summary)
 

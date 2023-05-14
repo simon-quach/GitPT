@@ -10,7 +10,7 @@ const embedding = require('./helper/embedding.js')
 const connectDB = require('./mongo/connect.js')
 const {getCommitSHA} = require('./helper/returntree.js')
 const traverse = require('./helper/traversal.js')
-const {addToMilvus} = require('./helper/milvus')
+const {addToMilvus, queryMilvus} = require('./helper/milvus')
 const insertData = require('./helper/mongodb')
 // MongoDB Setup
 connectDB(process.env.MONGODB_URL)
@@ -123,6 +123,33 @@ router.post('/traverse', async (req, res) => {
   } catch (error) {
     console.error('Error traversing repository:', error)
     res.status(500).send('Error traversing repository')
+  }
+})
+
+router.post('/query', async (req, res) => {
+  try {
+    // Assuming the request body has vector and repoUUID
+    const {text, repoUUID} = req.body
+    // Validate the request body
+    if (!text || !repoUUID) {
+      return res.status(400).json({message: 'Vector and repoUUID are required'})
+    }
+
+    const vector = await embedding(openai, text)
+    // Save vector as plain text in txt
+    fs = require('fs')
+    fs.writeFile('vector.txt', vector.toString(), function (err) {
+      if (err) return console.log(err)
+      console.log('Vector saved in vector.txt')
+    })
+
+    const results = await queryMilvus(milvusClient, vector, repoUUID)
+    return res.status(200).json(results)
+  } catch (error) {
+    console.error('Error querying Milvus:', error)
+    return res
+      .status(500)
+      .json({message: 'An error occurred while querying Milvus'})
   }
 })
 
