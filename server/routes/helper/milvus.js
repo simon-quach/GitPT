@@ -30,7 +30,7 @@ const addToMilvus = async (instance, milvusData) => {
 const queryMilvus = async (instance, vector, repoUUID) => {
   const searchParams = {
     anns_field: 'vector',
-    topk: 5,
+    topk: 3,
     metric_type: MetricType.L2,
     params: JSON.stringify({nprobe: 16}),
   }
