@@ -74,6 +74,7 @@ const Repository = () => {
   const [fileType, setFileType] = useState('directory')
   const [fileContents, setFileContents] = useState<FileObject>(emptyFileObject)
   const [dirContent, setDirContent] = useState<TreeNode[]>([])
+  const [metaData, setMetaData] = useState<FileObject>(emptyFileObject)
   let keys = currentPath.split('/')
 
   useEffect(() => {
@@ -83,6 +84,9 @@ const Repository = () => {
         const tree = generateTree(res.data)
         setTree(tree)
       })
+    axios.get(`http://localhost:3000/getdocs/${id}/metadata`).then((res) => {
+      setMetaData(res.data)
+    })
   }, [id])
 
   useEffect(() => {
