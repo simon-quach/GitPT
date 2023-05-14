@@ -14,6 +14,7 @@ const {addToMilvus, queryMilvus} = require('./helper/milvus')
 const insertData = require('./helper/mongodb')
 const breadcrumb = require('./helper/breadcrumb.js')
 const generate = require('./helper/generate.js')
+const getdocs = require('./helper/getdocs.js')
 
 // MongoDB Setup
 connectDB(process.env.MONGODB_URL)
@@ -189,6 +190,29 @@ router.post('/generate', async (req, res) => {
     res
       .status(500)
       .json({error: 'An error occurred while processing the request'})
+  }
+})
+
+app.get('/breadcrumb/:repoUUID', async (req, res) => {
+  try {
+    const repoUUID = req.params.repoUUID
+    const paths = await breadcrumb(Repository, repoUUID)
+    res.json(paths)
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Server Error')
+  }
+})
+
+app.get('/getdocs/:repoUUID/:fileUUIDs', async (req, res) => {
+  try {
+    const {repoUUID, fileUUIDs} = req.params
+    const fileUUIDsArray = fileUUIDs.split(',') // Assuming fileUUIDs are comma-separated in the URL
+    const contents = await getdocs(Repository, repoUUID, fileUUIDsArray)
+    res.json(contents)
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Server Error')
   }
 })
 

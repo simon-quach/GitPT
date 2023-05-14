@@ -1,15 +1,13 @@
-const breadcrumb = async (instance, repoUUID, path) => {
-  const paths = [];
-  const repository = await instance.findOne({ _id: repoUUID });
+const breadcrumb = async (instance, repoUUID) => {
+  const paths = []
+  const repository = await instance.findOne({_id: repoUUID})
   if (repository) {
-    const files = repository.files;
+    const files = repository.files
     for (const [key, value] of files.entries()) {
-      if (value.path.startsWith(path)) {
-        paths.push(value.path);
-      }
+      paths.push({path: value.path, uuid: value.fileUUID})
     }
   }
-  return paths;
-};
+  return paths
+}
 
-module.exports = breadcrumb;
+module.exports = breadcrumb
