@@ -3,8 +3,6 @@ import "./globals.css";
 import Image from "next/image";
 import Link from "next/link";
 
-import ThreeD from "./components/ThreeD";
-
 export const metadata = {
   title: "GitPT",
   description: "Decoding Complex Codebases, One Chat at a Time",
@@ -21,17 +19,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-[#1B1C1E] text-[#c8c8c8] font-montserrat">
-        <div className="fixed z-[-1]">
-          <ThreeD />
-        </div>
         <nav className="flex h-[100px] text-[14px] items-center px-[3rem] justify-between">
-          <Image
-            src="./gitpt-logo.svg"
-            alt="gitpt-logo"
-            width={48}
-            height={48}
-            className="cursor-pointer text-white"
-          />
+          <Link href="/">
+            <Image
+              src="./gitpt-logo.svg"
+              alt="gitpt-logo"
+              width={48}
+              height={48}
+              className="cursor-pointer text-white"
+            />
+          </Link>
+
           <div className="flex gap-[3rem] items-center">
             <Link
               href="/"
@@ -45,12 +43,12 @@ export default function RootLayout({
             >
               About
             </Link>
-            <div className="cursor-pointer hover:text-white transition-all">
-              Services
-            </div>
-            <div className="font-bold bg-white text-[#1B1C1E] px-[1.5rem] py-[1rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all">
-              Get Started
-            </div>
+            <Link
+              href="/chat"
+              className="font-bold bg-white text-[#1B1C1E] px-[1.5rem] py-[1rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all"
+            >
+              Start Chatting
+            </Link>
           </div>
         </nav>
 
