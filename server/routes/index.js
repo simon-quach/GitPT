@@ -1,15 +1,17 @@
-var express = require("express");
-var router = express.Router();
-var cors = require("cors");
-var dotenv = require("dotenv");
-dotenv.config();
+var express = require('express')
+var router = express.Router()
+var cors = require('cors')
+var dotenv = require('dotenv')
+dotenv.config()
 
-const extractNameAndProject = require("./helper/getinfo.js");
-const summarize = require("./helper/summarize.js");
-const embedding = require("./helper/embedding.js");
-const connectDB = require("./mongo/connect.js");
-const { getCommitSHA } = require("./helper/returntree.js");
-const traverse = require("./helper/traversal.js");
+const extractNameAndProject = require('./helper/getinfo.js')
+const summarize = require('./helper/summarize.js')
+const embedding = require('./helper/embedding.js')
+const connectDB = require('./mongo/connect.js')
+const {getCommitSHA} = require('./helper/returntree.js')
+const traverse = require('./helper/traversal.js')
+const {addToMilvus} = require('./helper/milvus')
+const insertData = require('./helper/mongodb')
 const breadcrumb = require("./helper/breadcrumb.js");
 // MongoDB Setup
 connectDB(process.env.MONGODB_URL);
@@ -109,8 +111,17 @@ router.post("/traverse", async (req, res) => {
   }
 
   try {
-    await traverse(openai, octokit, milvusClient, owner, repo);
-    res.status(200).send("Successfully traversed repository");
+    const {milvusData, mongoData} = await traverse(
+      openai,
+      octokit,
+      milvusClient,
+      owner,
+      repo,
+    )
+    await addToMilvus(milvusClient, milvusData)
+    await insertData(mongoData)
+
+    res.status(200).send('Successfully traversed repository')
   } catch (error) {
     console.error("Error traversing repository:", error);
     res.status(500).send("Error traversing repository");
