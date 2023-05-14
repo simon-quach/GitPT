@@ -9,7 +9,7 @@ Call embedding based on summary
 Call add to vector with embedding
 */
 const path = require('path')
-const getCommitSHA = require('./getCommitSHA')
+const getCommitSHA = require('./returntree')
 const summarize = require('./summarize')
 const embedding = require('./embedding')
 const {addToMilvus} = require('./milvus')

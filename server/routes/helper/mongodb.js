@@ -5,13 +5,13 @@ Output: None
 What it does: 
 Stores data in mongodb in the repository UUID with the file UUID as key
 */
-const {Repository} = require('../mongo/data')
+const Repository = require('../mongo/data')
 async function insertData(
   repoUuid,
   fileUuid,
   path,
   summary,
-  originalContents,
+  original,
   embedding,
 ) {
   // Create new file data
@@ -19,7 +19,7 @@ async function insertData(
     _id: fileUuid,
     path,
     summary,
-    contents: originalContents,
+    contents: original,
     embedding,
   }
 
