@@ -35,3 +35,5 @@ const queryMilvus = async (instance, vector, repoUUID) => {
   const response = await instance.search(query)
   return response
 }
+
+module.exports = {addToMilvus, queryMilvus}

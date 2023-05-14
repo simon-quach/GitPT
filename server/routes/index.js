@@ -8,6 +8,7 @@ const extractNameAndProject = require('./helper/getinfo.js')
 const summarize = require('./helper/summarize.js')
 const embedding = require('./helper/embedding.js')
 const connectDB = require('./mongo/connect.js')
+const insertData = require('./helper/mongodb.js')
 
 // MongoDB Setup
 connectDB(process.env.MONGODB_URL)
@@ -74,15 +75,33 @@ router.post('/summarize', async (req, res) => {
     const path = req.body.path // Assuming the path is passed in the request body
 
     // Call the summarize function
-    const summary = await summarize(openai, octokit, owner, repo, path)
+    const output = await summarize(openai, octokit, owner, repo, path)
 
     // Send the summary as the response
-    res.send(summary)
+    res.send(output)
   } catch (error) {
     console.log(error)
     // Handle any errors that occurred during the process
     res.status(500).json({error: 'Internal server error'})
   }
+})
+
+router.post('/insert-data', async (req, res) => {
+  const {repoUuid, fileUuid, path, summary, originalContents, embedding} =
+    req.body
+
+  const status = await insertData(
+    repoUuid,
+    fileUuid,
+    path,
+    summary,
+    originalContents,
+    embedding,
+  )
+  if (status === 500) {
+    res.status(500).json({error: 'Internal server error'})
+  }
+  res.status(200).json({status: 'OK'})
 })
 
 module.exports = router
