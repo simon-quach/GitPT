@@ -3,8 +3,7 @@ Inserts data into mongodb
 Input: Repo UUID, File UUID, Path, Summary, Original Contents, Embedding
 Output: None
 What it does: 
-Creates a UUID for this data
-Stores Path, Summary, Original Contents, and Embedding in mongodb in the repository UUID with the file UUID as key
+Stores data in mongodb in the repository UUID with the file UUID as key
 */
 const {Repository} = require('../mongo/data')
 function insertData(
@@ -37,3 +36,5 @@ function insertData(
       console.error('Error inserting data:', err)
     })
 }
+
+module.exports = insertData
