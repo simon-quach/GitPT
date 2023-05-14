@@ -25,7 +25,7 @@ export default function About() {
       name: "Bill Zhang",
       school: "USC",
       major: "CS",
-      role: "Backend",
+      role: "Full Stack",
       img: Bill,
     },
     {
@@ -38,12 +38,12 @@ export default function About() {
   ];
   return (
     <div className="font-lexend-deca h-[calc(100vh-80px) pt-[64px] flex justify-center">
-      <div className="flex flex-col mx-[5%] sm:mx-[10%] cursor-default">
+      <div className="flex flex-col justify-center items-center mx-[5%] sm:mx-[10%] cursor-default">
         <div className="font-normal text-[#62a1ff] text-center">GitP-Team</div>
         <div className="text-[40px] font-semibold text-center">
           Meet Our Team
         </div>
-        <div className="flex justify-center sm:justify-start flex-wrap text-center mt-[24px] gap-[48px]">
+        <div className="flex justify-center sm:justify-start flex-wrap text-center mt-[2rem] gap-[48px]">
           {team.map((member, index) => (
             <div
               key={index}
@@ -64,7 +64,7 @@ export default function About() {
             </div>
           ))}
         </div>
-        <div className="font-light text-[#9e9e9e] mt-[24px] mb-[24px] max-w-[700px] text-center">
+        <div className="font-light text-[#9e9e9e] mt-[2rem] mb-[24px] max-w-[700px] text-center">
           Our team members, with diverse skills and experiences, played a
           crucial role in designing the UI and developing the back-end for
           GitPT. Together, we are a dynamic and collaborative group dedicated to

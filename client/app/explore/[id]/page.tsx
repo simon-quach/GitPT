@@ -225,7 +225,7 @@ const Repository = () => {
       </div>
       {fileType === "file" ? (
         <div className="">
-          <div className="w-full lg:h-[36rem] mt-[1rem] flex flex-col rounded-md overflow-hidden">
+          <div className="w-full lg:h-[32rem] mt-[1rem] flex flex-col rounded-md overflow-hidden">
             <div className="w-full h-[36px] flex items-center relative bg-[#1E2022]"></div>
             <div className="w-full h-[calc(100%-36px)] flex lg:flex-row flex-col">
               <div className="bg-[#161718] w-full lg:w-[70%] lg:h-full text-[12px] px-[1rem] py-[1rem] overflow-y-auto">
@@ -242,7 +242,7 @@ const Repository = () => {
                     })}
                 </div>
               </div>
-              <div className="bg-[#131315] w-full lg:w-[30%] flex flex-col items-center justify-between gap-8 lg:gap-0 px-[2rem] py-[2rem]">
+              <div className="bg-[#131315] w-full lg:w-[30%] flex flex-col items-center justify-between gap-8 lg:gap-0 px-[2rem] py-[2rem] overflow-y-auto">
                 <div className="">
                   <div className="text-[#62a1ff] text-[8px]">File Name</div>
                   <div className="text-[16px]">
@@ -273,7 +273,7 @@ const Repository = () => {
                 <Link
                   href={fileContents.fullpath}
                   target="_blank"
-                  className="font-bold group flex items-center justify-center gap-2 bg-white text-[#1B1C1E] px-[1rem] py-[0.5rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all"
+                  className="mt-[2rem] font-bold group flex items-center justify-center gap-2 bg-white text-[#1B1C1E] px-[1rem] py-[0.5rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all"
                 >
                   <Image
                     src={Github}
