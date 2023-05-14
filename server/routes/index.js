@@ -129,7 +129,7 @@ router.post("/traverse", async (req, res) => {
       contents: ownerName,
       embedding: [],
     };
-    
+
     const { milvusData, mongoData } = await traverse(
       openai,
       octokit,
