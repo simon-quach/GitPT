@@ -12,11 +12,9 @@ const generate = async (openai, mongo, milvus, question, repoUUID) => {
   // Get the fileUUIDs from the results
   const fileUUIDs = results.map((result) => result.fileUUID);
 
-  console.log(fileUUIDs);
   // Get the contents of the files
-  const files = await getdocs(mongo, repoUUID, fileUUIDs);
-
-  const contents = files.map((file) => file.content);
+  const files = await getdocs(mongo, repoUUID, fileUUIDs)
+  const contents = files.map((file) => file.contents)
   // Generate summary
   const combined = contents.join("\n\n");
 

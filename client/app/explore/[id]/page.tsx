@@ -1,9 +1,10 @@
 "use client";
 
-import Clipboard from "../../../assets/icons/clipboard.svg";
 import Github from "../../../assets/icons/github.svg";
 import Folder from "../../../assets/icons/folder.svg";
 import File from "../../../assets/icons/file.svg";
+import Chat from "../../../assets/icons/chat.svg";
+import ChatBox from "../../components/ChatBox";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -78,6 +79,7 @@ const Repository = () => {
   const [fileContents, setFileContents] = useState<FileObject>(emptyFileObject);
   const [dirContent, setDirContent] = useState<TreeNode[]>([]);
   const [metaData, setMetaData] = useState<FileObject>(emptyFileObject);
+  const [chat, setChat] = useState(false);
   let keys = currentPath.split("/");
 
   useEffect(() => {
@@ -149,6 +151,15 @@ const Repository = () => {
 
   return (
     <div className="min-h-[calc(100vh-100px)] flex flex-col text-[#c8c8c8] px-[2rem] py-[4rem] lg:px-[8rem]">
+      <Image
+        src={Chat}
+        alt="chat"
+        width={48}
+        height={48}
+        className="fixed bottom-8 right-8 cursor-pointer"
+        onClick={() => setChat(!chat)}
+      />
+      {chat ? <ChatBox /> : <></>}
       <div className="">
         <div className="text-[12px] text-[#62a1ff]">Repository</div>
         <div className="text-[2rem] font-semibold text-[#ffffff]">
