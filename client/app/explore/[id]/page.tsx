@@ -83,7 +83,6 @@ const Repository = () => {
       .get(`http://localhost:3000/breadcrumb/${id}`)
       .then((res: AxiosResponse<any>) => {
         const tree = generateTree(res.data);
-        console.log(tree);
         setTree(tree);
       });
   }, [id]);
@@ -115,24 +114,45 @@ const Repository = () => {
       } else {
         setFileType("directory");
         setFileContents(emptyFileObject);
-        setDirContent(Object.values(leaf.children!));
+        let newDirContent = Object.values(leaf.children!);
+        // Add "..." directory at the beginning if not in the root directory
+        if (currentPath !== "") {
+          newDirContent = [
+            { name: "...", type: "directory" },
+            ...newDirContent,
+          ];
+        }
+        setDirContent(newDirContent);
       }
     }
   }, [currentPath, tree, id]);
 
   const handleItemClick = (name: string) => {
-    setCurrentPath((prevPath) => `${prevPath}/${name}`);
+    if (name === "...") {
+      // go up one directory level when "..." is clicked
+      const upOneLevel = currentPath.split("/").slice(0, -1).join("/");
+      setCurrentPath(upOneLevel);
+    } else {
+      setCurrentPath((prevPath) => `${prevPath}/${name}`);
+    }
+  };
+
+  // handle clicking on a directory in the path
+  const handleKeyClick = (index: number) => {
+    setCurrentPath(keys.slice(0, index + 1).join("/"));
   };
 
   return (
     <div className="min-h-[calc(100vh-100px)] flex flex-col text-white px-[8rem]">
+      <div className="text-left font-medium text-[12px]">
+        {keys.map((key: string, index: number) => (
+          <span key={index} onClick={() => handleKeyClick(index)}>
+            {key} &gt;
+          </span>
+        ))}
+      </div>
       {fileType === "file" ? (
         <div className="">
-          <div className="text-left font-medium text-[12px]">
-            {keys.map((key: string, index: number) => (
-              <span key={index}>{key} &gt;</span>
-            ))}
-          </div>
           <div className=" w-full h-[36rem] mt-[1rem] flex flex-col rounded-md overflow-hidden">
             <div className="w-full h-[36px] flex items-center relative bg-[#1E2022]">
               <Image
@@ -142,9 +162,18 @@ const Repository = () => {
               />
             </div>
             <div className="w-ful h-full flex">
-              <div className="bg-[#161718] w-[70%] text-[12px] px-[1rem] py-[1rem]">
-                <div className="font-mono">
-                  {fileContents.contents ? fileContents.contents : ""}
+              <div className="bg-[#161718] w-[70%] text-[12px] px-[1rem] py-[1rem] overflow-y-auto">
+                <div className="font-mono whitespace-pre-line">
+                  {(fileContents.contents ? fileContents.contents : "")
+                    .split("\n")
+                    .map((item, key) => {
+                      return (
+                        <span key={key}>
+                          {item}
+                          <br />
+                        </span>
+                      );
+                    })}
                 </div>
               </div>
               <div className="bg-[#131315] w-[30%] flex flex-col items-center justify-between px-[2rem] py-[2rem]">
@@ -157,13 +186,22 @@ const Repository = () => {
                   </div>
                   <br />
                   <div className="text-[#62a1ff] text-[8px]">Path</div>
-                  <div className="text-[12px]">
+                  <div className="text-[12px] whitespace-pre-line">
                     {fileContents.path ? fileContents.path : ""}
                   </div>
                   <br />
                   <div className="text-[#62a1ff] text-[8px]">Summary</div>
-                  <div className="text-[12px]">
-                    {fileContents.summary ? fileContents.summary : ""}
+                  <div className="text-[12px] whitespace-pre-line">
+                    {(fileContents.summary ? fileContents.summary : "")
+                      .split("\n")
+                      .map((item, key) => {
+                        return (
+                          <span key={key}>
+                            {item}
+                            <br />
+                          </span>
+                        );
+                      })}
                   </div>
                 </div>
                 <div className="font-bold group flex items-center justify-center gap-2 bg-white text-[#1B1C1E] px-[1rem] py-[0.5rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all">
