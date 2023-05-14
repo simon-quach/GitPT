@@ -13,6 +13,11 @@ const Selection = () => {
     })
   }, [])
 
+  const router = useRouter()
+  const onClick = (id: string) => {
+    router.push(`/explore/${id}`)
+  }
+
   return (
     <div>
       <div class="grid grid-cols-3 gap-4">
