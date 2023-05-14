@@ -44,7 +44,7 @@ export default function RootLayout({
               About
             </Link>
             <Link
-              href="/explore"
+              href="/explore/ca0f839ace0e78486bf2d2b0442ca485ab2cd881"
               className="font-bold bg-white text-[#1B1C1E] px-[1.5rem] py-[1rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white hover:fill-white border-[1px] transition-all"
             >
               Explore Repo
