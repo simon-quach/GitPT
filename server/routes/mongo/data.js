@@ -8,6 +8,10 @@ const FileDataSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  fullpath: {
+    type: String,
+    required: true,
+  },
   summary: {
     type: String,
     required: true,

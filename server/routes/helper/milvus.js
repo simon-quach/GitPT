@@ -1,20 +1,28 @@
 const {DataType, MetricType} = require('@zilliz/milvus2-sdk-node')
 
-const addToMilvus = async (instance, vector, repoUUID, fileUUID) => {
-  const fields = [];
-  for(let i = 0; i < vector.length; i++) {
-    const fieldObject = {
-      fileUUID: fileUUID[i],
-      vector: vector[i]
-    }
-    fields.push(fieldObject)
+const addToMilvus = async (instance, milvusData) => {
+  // Check if there is any data to process
+  if (milvusData.length === 0) {
+    return
   }
+
+  // Get the repoUUID from the first item
+  const repoUUID = milvusData[0].repoUUID
+
+  const fields = milvusData.map((data) => {
+    const {fileUUID, vector} = data
+    return {
+      fileUUID,
+      vector,
+    }
+  })
 
   const data = {
     collection_name: 'Github',
     partitionName: repoUUID,
-    fieldsData: fields
+    fields_data: fields,
   }
+
   const response = await instance.insert(data)
   return response
 }
