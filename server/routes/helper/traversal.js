@@ -35,15 +35,19 @@ const traverse = async (
   for (const item of response.data) {
     if (item.type === 'dir') {
       // Recursively traverse this subdirectory
-      await traverse(
-        openai,
-        octokit,
-        instance,
-        owner,
-        repo,
-        item.path,
-        commitSha,
-      )
+      try {
+        await traverse(
+          openai,
+          octokit,
+          instance,
+          owner,
+          repo,
+          item.path,
+          commitSha,
+        )
+      } catch (err) {
+        console.log(err)
+      }
     } else if (item.type === 'file' && isSupportedFile(item.name)) {
       console.log(item.path)
       // This is a file, so we'll summarize, embed, and add to the vector
