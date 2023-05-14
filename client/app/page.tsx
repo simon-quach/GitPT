@@ -1,8 +1,15 @@
 import ThreeD from "./components/ThreeD";
+import { Ellipsis } from "react-css-spinners";
 
 export default function Home() {
+  const Loader = (props) => (
+    <>
+      <Ellipsis />
+    </>
+  );
+
   return (
-    <main className="min-h-[calc(100vh-100px)] flex flex-col items-center text-white">
+    <main className="min-h-[calc(100vh-100px)] flex flex-col items-center text-white mt-[4rem]">
       <div className="fixed z-[-1] top-0">
         <ThreeD />
       </div>

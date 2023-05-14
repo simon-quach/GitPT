@@ -19,6 +19,7 @@
     "eslint-config-next": "13.4.2",
     "next": "13.4.2",
     "react": "18.2.0",
+    "react-css-spinners": "^4.0.2",
     "react-dom": "18.2.0",
     "three": "^0.152.2",
     "typescript": "5.0.4"
