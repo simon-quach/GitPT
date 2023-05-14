@@ -111,7 +111,7 @@ router.post('/commit-sha', async (req, res) => {
 })
 
 router.post('/traverse', async (req, res) => {
-  const {owner, repo} = req.body
+  const {owner, repo, branch} = req.body
   if (!owner || !repo) {
     return res.status(400).send('Missing owner or repo in request body')
   }
@@ -136,12 +136,15 @@ router.post('/traverse', async (req, res) => {
       embedding: [],
     }
 
+    const commitSha = await getCommitSHA(octokit, owner, repo, branch)
+
     const {milvusData, mongoData} = await traverse(
       openai,
       octokit,
       milvusClient,
       owner,
       repo,
+      commitSha,
     )
     await addToMilvus(milvusClient, milvusData)
     await insertData(mongoData.concat(dummyData))

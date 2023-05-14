@@ -20,17 +20,14 @@ const traverse = async (
   instance,
   owner,
   repo,
+  commitSha,
   path = '',
-  commitSha = '',
 ) => {
   const response = await octokit.repos.getContent({
     owner,
     repo,
     path,
   })
-  if (commitSha === '') {
-    commitSha = await getCommitSHA(octokit, owner, repo)
-  }
 
   // Create arrays to store data for Milvus and MongoDB
   let milvusData = []
@@ -47,8 +44,8 @@ const traverse = async (
             instance,
             owner,
             repo,
-            item.path,
             commitSha,
+            item.path,
           )
         milvusData = milvusData.concat(subdirMilvusData)
         mongoData = mongoData.concat(subdirMongoData)
@@ -64,8 +61,8 @@ const traverse = async (
               instance,
               owner,
               repo,
-              item.path,
               commitSha,
+              item.path,
             )
           milvusData = milvusData.concat(subdirMilvusData)
           mongoData = mongoData.concat(subdirMongoData)
@@ -80,13 +77,16 @@ const traverse = async (
       const repoUUID = commitSha
 
       // Call the summarize function
-      const {summary, original} = await summarize(
-        openai,
-        octokit,
-        owner,
-        repo,
-        item.path,
-      )
+      let summary = ''
+      let original = ''
+      try {
+        const obj = await summarize(openai, octokit, owner, repo, item.path)
+        summary = obj.summary
+        original = obj.original
+      } catch (err) {
+        console.log(err)
+        continue
+      }
       // Call the embedding function
       const vector = await embedding(openai, summary)
 
