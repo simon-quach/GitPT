@@ -33,7 +33,7 @@ const traverse = async (
     commitSha = await getCommitSHA(octokit, owner, repo)
   }
   for (const item of response.data) {
-    if (item.type === 'dir') {
+    if (item.type === "dir") {
       // Recursively traverse this subdirectory
       try {
         await traverse(
@@ -115,10 +115,10 @@ const isSupportedFile = (filename) => {
   ]
 
   // Get the file extension
-  const ext = path.extname(filename)
+  const ext = path.extname(filename);
 
   // Return true if the file extension is in the array of supported extensions
-  return supportedExtensions.includes(ext)
-}
+  return supportedExtensions.includes(ext);
+};
 
-module.exports = traverse
+module.exports = traverse;
