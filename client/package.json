@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@fontsource/montserrat": "^4.5.14",
+    "@fontsource/roboto-mono": "^4.5.10",
     "@types/node": "20.1.4",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
