@@ -4,7 +4,7 @@ const breadcrumb = async (instance, repoUUID) => {
   if (repository) {
     const files = repository.files
     for (const [key, value] of files.entries()) {
-      paths.push({path: value.path, uuid: value.fileUUID})
+      paths.push({path: value.path, uuid: value._id})
     }
   }
   return paths
