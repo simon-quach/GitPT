@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios, { AxiosResponse } from "axios";
+import Link from "next/link";
 
 interface PathObject {
   path: string;
@@ -69,27 +70,27 @@ const emptyFileObject: FileObject = {
 };
 
 const Repository = () => {
-  const params = useParams()
-  const id = params.id
-  const [tree, setTree] = useState<Tree>({})
-  const [currentPath, setCurrentPath] = useState('')
-  const [fileType, setFileType] = useState('directory')
-  const [fileContents, setFileContents] = useState<FileObject>(emptyFileObject)
-  const [dirContent, setDirContent] = useState<TreeNode[]>([])
-  const [metaData, setMetaData] = useState<FileObject>(emptyFileObject)
-  let keys = currentPath.split('/')
+  const params = useParams();
+  const id = params.id;
+  const [tree, setTree] = useState<Tree>({});
+  const [currentPath, setCurrentPath] = useState("");
+  const [fileType, setFileType] = useState("directory");
+  const [fileContents, setFileContents] = useState<FileObject>(emptyFileObject);
+  const [dirContent, setDirContent] = useState<TreeNode[]>([]);
+  const [metaData, setMetaData] = useState<FileObject>(emptyFileObject);
+  let keys = currentPath.split("/");
 
   useEffect(() => {
     axios
       .get(`http://localhost:3000/breadcrumb/${id}`)
       .then((res: AxiosResponse<any>) => {
-        const tree = generateTree(res.data)
-        setTree(tree)
-      })
+        const tree = generateTree(res.data);
+        setTree(tree);
+      });
     axios.get(`http://localhost:3000/getdocs/${id}/metadata`).then((res) => {
-      setMetaData(res.data)
-    })
-  }, [id])
+      setMetaData(res.data);
+    });
+  }, [id]);
 
   useEffect(() => {
     function getCurrentNode(keys: string[]) {
@@ -146,14 +147,24 @@ const Repository = () => {
     setCurrentPath(keys.slice(0, index + 1).join("/"));
   };
 
-  const copyToClipboard = () => {
-    if (fileContents.contents) {
-      navigator.clipboard.writeText(fileContents.contents);
-    }
-  };
-
   return (
-    <div className="min-h-[calc(100vh-100px)] flex flex-col text-[#c8c8c8] px-[2rem] lg:px-[8rem]">
+    <div className="min-h-[calc(100vh-100px)] flex flex-col text-[#c8c8c8] px-[2rem] py-[4rem] lg:px-[8rem]">
+      <div className="">
+        <div className="text-[12px] text-[#62a1ff]">Repository</div>
+        <div className="text-[2rem] font-semibold text-[#ffffff]">
+          {metaData.fullpath.split("/").pop()}
+        </div>
+        <div className="text-[16px] font-medium text-[#c8c8c8]">
+          {metaData.summary}
+        </div>
+        <Link
+          href={metaData.fullpath}
+          target="_blank"
+          className="font-bold group w-[4rem] my-[1rem] flex items-center justify-center gap-2 bg-white text-[#1B1C1E] px-[1rem] py-[0.5rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all"
+        >
+          <Image src={Github} alt="github" className="group-hover:invert" />
+        </Link>
+      </div>
       <div className="text-left font-medium text-[12px]">
         {keys.map((key: string, index: number) => (
           <span
@@ -168,14 +179,7 @@ const Repository = () => {
       {fileType === "file" ? (
         <div className="">
           <div className="w-full lg:h-[36rem] mt-[1rem] flex flex-col rounded-md overflow-hidden">
-            <div className="w-full h-[36px] flex items-center relative bg-[#1E2022]">
-              <Image
-                src={Clipboard}
-                alt="clipboard"
-                className="absolute left-2"
-                onClick={copyToClipboard}
-              />
-            </div>
+            <div className="w-full h-[36px] flex items-center relative bg-[#1E2022]"></div>
             <div className="w-full h-[calc(100%-36px)] flex lg:flex-row flex-col">
               <div className="bg-[#161718] w-full lg:w-[70%] lg:h-full text-[12px] px-[1rem] py-[1rem] overflow-y-auto">
                 <div className="font-mono whitespace-pre-line">
@@ -219,14 +223,18 @@ const Repository = () => {
                       })}
                   </div>
                 </div>
-                <div className="font-bold group flex items-center justify-center gap-2 bg-white text-[#1B1C1E] px-[1rem] py-[0.5rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all">
+                <Link
+                  href={fileContents.fullpath}
+                  target="_blank"
+                  className="font-bold group flex items-center justify-center gap-2 bg-white text-[#1B1C1E] px-[1rem] py-[0.5rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all"
+                >
                   <Image
                     src={Github}
                     alt="github"
                     className="group-hover:invert"
                   />
                   <div>Open in Github</div>
-                </div>
+                </Link>
               </div>
             </div>
           </div>
