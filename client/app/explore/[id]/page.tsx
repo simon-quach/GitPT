@@ -4,7 +4,7 @@ import Github from "../../../assets/icons/github.svg";
 import Folder from "../../../assets/icons/folder.svg";
 import File from "../../../assets/icons/file.svg";
 import Chat from "../../../assets/icons/chat.svg";
-import ChatBox from "../../components/ChatBox";
+import { ChatBox } from "../../components/ChatBox";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -80,7 +80,34 @@ const Repository = () => {
   const [dirContent, setDirContent] = useState<TreeNode[]>([]);
   const [metaData, setMetaData] = useState<FileObject>(emptyFileObject);
   const [chat, setChat] = useState(false);
+  const [question, setQuestion] = useState("");
+  const [conversations, setConversations] = useState([
+    {
+      role: "bot",
+      message: "Hello, what questions do you have?",
+    },
+  ]);
   let keys = currentPath.split("/");
+
+  useEffect(() => {
+    if (conversations.length === 1) {
+      return;
+    }
+    if (conversations[conversations.length - 1].role === "bot") {
+      return;
+    }
+    axios
+      .post(`http://localhost:3000/generate`, {
+        question: conversations[conversations.length - 1].message,
+        repoUUID: id,
+      })
+      .then((res: AxiosResponse<any>) => {
+        setConversations((prev) => [
+          ...prev,
+          { role: "bot", message: res.data.response },
+        ]);
+      });
+  }, [conversations, id]);
 
   useEffect(() => {
     axios
@@ -150,7 +177,7 @@ const Repository = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-100px)] flex flex-col text-[#c8c8c8] px-[2rem] py-[4rem] lg:px-[8rem]">
+    <div className="min-h-[calc(100vh-100px)] flex flex-col text-[#c8c8c8] px-[2rem] py-[1rem] lg:px-[8rem]">
       <Image
         src={Chat}
         alt="chat"
@@ -159,7 +186,16 @@ const Repository = () => {
         className="fixed bottom-8 right-8 cursor-pointer"
         onClick={() => setChat(!chat)}
       />
-      {chat ? <ChatBox /> : <></>}
+      {chat ? (
+        <ChatBox
+          input={question}
+          setInput={setQuestion}
+          conversations={conversations}
+          setConversations={setConversations}
+        />
+      ) : (
+        <></>
+      )}
       <div className="">
         <div className="text-[12px] text-[#62a1ff]">Repository</div>
         <div className="text-[2rem] font-semibold text-[#ffffff]">
@@ -259,7 +295,7 @@ const Repository = () => {
                 {dirContent.map((item, index) => (
                   <div key={index} onClick={() => handleItemClick(item.name)}>
                     {item.type === "directory" && item.name !== "" && (
-                      <div className="flex items-center gap-2 border-b border-[#2D2D2D] py-3 cursor-pointer hover:bg-[#1d1e20]">
+                      <div className="flex items-center gap-2 border-b border-[#2D2D2D] py-3 px-[1rem] cursor-pointer hover:bg-[#1d1e20]">
                         <Image src={Folder} alt="folder" className="" />
                         <div>{item.name}</div>
                       </div>
@@ -273,7 +309,7 @@ const Repository = () => {
                     className=""
                   >
                     {item.type === "file" && item.name !== "" && (
-                      <div className="flex items-center gap-2 border-b border-[#2D2D2D] py-3 cursor-pointer hover:bg-[#1d1e20]">
+                      <div className="flex items-center gap-2 border-b border-[#2D2D2D] py-3 px-[1rem] cursor-pointer hover:bg-[#1d1e20]">
                         <Image src={File} alt="file" className="" />
                         <div>{item.name}</div>
                       </div>

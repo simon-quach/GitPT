@@ -1,53 +1,62 @@
 "use client";
+import { FormEvent } from "react";
 import ChatPFP from "../../assets/icons/chat-pfp.svg";
 import Send from "../../assets/icons/send.svg";
 import Image from "next/image";
-import { useState } from "react";
 
-export default function ChatBox() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+type ChatBoxProps = {
+  input: string;
+  setInput: (input: string) => void;
+  conversations: { role: "bot" | "user"; message: string }[];
+  setConversations: (
+    conversations: { role: "bot" | "user"; message: string }[]
+  ) => void;
+};
 
-  const dummyConversation = [
-    {
-      role: "bot",
-      message: "Hello! How can I help you today?",
-    },
-    {
-      role: "user",
-      message: "I'm having trouble with my code",
-    },
-    {
-      role: "bot",
-      message: "What is the error message?",
-    },
-    {
-      role: "user",
-      message: "I'm not sure",
-    },
-  ];
+type Message = {
+  role: "bot" | "user";
+  message: string;
+};
 
-  const submitHandler = (e: React.FormEvent<HTMLInputElement>) => {
+export const ChatBox: React.FC<ChatBoxProps> = ({
+  input,
+  setInput,
+  conversations,
+  setConversations,
+}) => {
+  const submitHandler = (e: FormEvent) => {
     e.preventDefault();
-    console.log(input);
+    setConversations([...conversations, { role: "user", message: input }]);
     setInput("");
   };
 
-  const updateInput = (e: React.FormEvent<HTMLInputElement>) => {
+  const updateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
 
   return (
-    <main className="w-[60rem] h-[40rem] bg-[#ffffff] rounded-md z-10 fixed bottom-[8rem] right-8 overflow-hidden flex flex-col items-center">
-      <div className="w-full text-[#1b1c1e] h-[calc(100%-5rem)]">
-        <div className="h-[4rem] bg-[#ededed] w-full flex items-center px-[2rem]">
-          <Image src={ChatPFP} alt="chat-pfp" />
-          <div className="ml-[1rem] font-medium">How can I help you today?</div>
-        </div>
-        <div className="h-[4rem] bg-[#ffffff] w-full flex items-center px-[2rem]">
-          <Image src={ChatPFP} alt="chat-pfp" />
-          <div className="ml-[1rem] font-medium">Shut up.</div>
-        </div>
+    <main className="w-[60rem] h-[35rem] bg-[#ffffff] rounded-md z-10 fixed bottom-[8rem] right-8 overflow-hidden flex flex-col items-center">
+      <div className="w-full text-[#1b1c1e] h-[calc(100%-5rem)] overflow-auto">
+        {conversations.map((msg: Message, index: number) => (
+          <div
+            key={index}
+            className={`min-h-[4rem] py-[2rem] ${
+              msg.role === "bot" ? "bg-[#ededed]" : "bg-[#ffffff]"
+            } w-full flex items-center px-[2rem]`}
+          >
+            {msg.role === "bot" && <Image src={ChatPFP} alt="chat-pfp" />}
+            <div
+              className={`font-medium ${
+                msg.role === "bot" ? "ml-[1rem]" : "ml-auto mr-[1rem]"
+              }`}
+            >
+              {msg.message}
+            </div>
+            {msg.role === "user" && (
+              <Image src={ChatPFP} alt="chat-pfp" className="ml-[1rem]" />
+            )}
+          </div>
+        ))}
       </div>
       <form
         onSubmit={(e) => submitHandler(e)}
@@ -71,4 +80,4 @@ export default function ChatBox() {
       </form>
     </main>
   );
-}
+};
