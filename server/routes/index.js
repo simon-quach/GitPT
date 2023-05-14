@@ -193,7 +193,7 @@ router.post('/generate', async (req, res) => {
   }
 })
 
-app.get('/breadcrumb/:repoUUID', async (req, res) => {
+router.get('/breadcrumb/:repoUUID', async (req, res) => {
   try {
     const repoUUID = req.params.repoUUID
     const paths = await breadcrumb(Repository, repoUUID)
@@ -204,7 +204,7 @@ app.get('/breadcrumb/:repoUUID', async (req, res) => {
   }
 })
 
-app.get('/getdocs/:repoUUID/:fileUUIDs', async (req, res) => {
+router.get('/getdocs/:repoUUID/:fileUUIDs', async (req, res) => {
   try {
     const {repoUUID, fileUUIDs} = req.params
     const fileUUIDsArray = fileUUIDs.split(',') // Assuming fileUUIDs are comma-separated in the URL

@@ -12,6 +12,7 @@ module.exports = {
     extend: {},
     fontFamily: {
       montserrat: ["Montserrat", "ui-sans-serif", "system-ui"],
+      mono: ["Roboto Mono", "ui-monospace"],
     },
   },
   plugins: [],
