@@ -7,7 +7,7 @@ import axios from 'axios'
 const Selection = () => {
   const [repositories, setRepositories] = useState([])
   useEffect(() => {
-    axios.get('http://localhost:3000/alldocs').then((response) => {
+    axios.get('https://api.art3m1s.me/gitpt/alldocs').then((response) => {
       console.log(response.data)
       setRepositories(response.data)
     })
