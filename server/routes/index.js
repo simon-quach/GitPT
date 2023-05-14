@@ -156,6 +156,49 @@ router.post('/traverse', async (req, res) => {
   }
 })
 
+/* POST delete repository. */
+router.post('/delete', async function (req, res) {
+  const {repoUUID} = req.body
+
+  // Get the repository from MongoDB
+  try {
+    const repository = await Repository.findOne({_id: repoUUID})
+    if (!repository) {
+      res
+        .status(404)
+        .json({title: 'Not Found', message: 'Repository not found'})
+      return
+    }
+    const fileUUIDs = []
+    if (repository) {
+      const files = repository.files
+      for (const [key, value] of files.entries()) {
+        fileUUIDs.push(value._id)
+      }
+    }
+
+    // Format the fileUUIDs for the deleteEntities expression
+    const expr = `fileUUID in [${fileUUIDs.map((id) => `"${id}"`).join(', ')}]`
+
+    // Delete the record in Milvus
+    const ret = await milvusClient.deleteEntities({
+      collection_name: 'Github',
+      expr: expr,
+    })
+
+    // Delete the repository in MongoDB
+    await Repository.findByIdAndDelete(repoUUID)
+
+    res.status(200).json({message: 'success', ret})
+  } catch (error) {
+    res.status(500).json({
+      title: 'Server Error',
+      message: 'An error occurred while processing the transaction.',
+      error: error.message,
+    })
+  }
+})
+
 router.post('/query', async (req, res) => {
   try {
     // Assuming the request body has vector and repoUUID
