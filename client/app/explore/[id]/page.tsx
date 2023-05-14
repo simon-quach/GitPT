@@ -76,20 +76,6 @@ const Repository = () => {
   const [dirContent, setDirContent] = useState<TreeNode[]>([])
   let keys = currentPath.split('/')
 
-  function getCurrentNode(keys: string[]) {
-    let subtree: Tree = tree
-    let leaf: TreeNode | null = null
-    for (let i = 0; i < keys.length; i++) {
-      if (subtree[keys[i]]) {
-        leaf = subtree[keys[i]]
-        subtree = subtree[keys[i]].children!
-      } else {
-        return null
-      }
-    }
-    return leaf
-  }
-
   useEffect(() => {
     axios
       .get(`http://localhost:3000/breadcrumb/${id}`)
@@ -101,6 +87,19 @@ const Repository = () => {
   }, [id])
 
   useEffect(() => {
+    function getCurrentNode(keys: string[]) {
+      let subtree: Tree = tree
+      let leaf: TreeNode | null = null
+      for (let i = 0; i < keys.length; i++) {
+        if (subtree[keys[i]]) {
+          leaf = subtree[keys[i]]
+          subtree = subtree[keys[i]].children!
+        } else {
+          return null
+        }
+      }
+      return leaf
+    }
     const leaf = getCurrentNode(keys)
     if (leaf && tree) {
       if (leaf.type === 'file') {
@@ -117,7 +116,7 @@ const Repository = () => {
         setDirContent(Object.values(leaf.children!))
       }
     }
-  }, [currentPath, tree])
+  }, [currentPath, tree, id, keys])
 
   const handleItemClick = (name: string) => {
     setCurrentPath((prevPath) => `${prevPath}/${name}`)
