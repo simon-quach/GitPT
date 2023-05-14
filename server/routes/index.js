@@ -10,6 +10,8 @@ const embedding = require('./helper/embedding.js')
 const connectDB = require('./mongo/connect.js')
 const {getCommitSHA} = require('./helper/returntree.js')
 const traverse = require('./helper/traversal.js')
+const {addToMilvus} = require('./helper/milvus')
+const insertData = require('./helper/mongodb')
 // MongoDB Setup
 connectDB(process.env.MONGODB_URL)
 
@@ -107,7 +109,16 @@ router.post('/traverse', async (req, res) => {
   }
 
   try {
-    await traverse(openai, octokit, milvusClient, owner, repo)
+    const {milvusData, mongoData} = await traverse(
+      openai,
+      octokit,
+      milvusClient,
+      owner,
+      repo,
+    )
+    await addToMilvus(milvusClient, milvusData)
+    await insertData(mongoData)
+
     res.status(200).send('Successfully traversed repository')
   } catch (error) {
     console.error('Error traversing repository:', error)

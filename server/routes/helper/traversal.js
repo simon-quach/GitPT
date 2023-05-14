@@ -12,8 +12,7 @@ const path = require('path')
 const {getCommitSHA} = require('./returntree')
 const summarize = require('./summarize')
 const embedding = require('./embedding')
-const {addToMilvus} = require('./milvus')
-const insertData = require('./mongodb')
+
 const {v4: uuidv4} = require('uuid')
 const traverse = async (
   openai,
@@ -32,28 +31,38 @@ const traverse = async (
   if (commitSha === '') {
     commitSha = await getCommitSHA(octokit, owner, repo)
   }
+
+  // Create arrays to store data for Milvus and MongoDB
+  let milvusData = []
+  let mongoData = []
+
   for (const item of response.data) {
-    if (item.type === "dir") {
+    if (item.type === 'dir') {
       // Recursively traverse this subdirectory
       try {
-        await traverse(
-          openai,
-          octokit,
-          instance,
-          owner,
-          repo,
-          item.path,
-          commitSha,
-        )
+        const {milvusData: subdirMilvusData, mongoData: subdirMongoData} =
+          await traverse(
+            openai,
+            octokit,
+            instance,
+            owner,
+            repo,
+            item.path,
+            commitSha,
+          )
+        milvusData = milvusData.concat(subdirMilvusData)
+        mongoData = mongoData.concat(subdirMongoData)
       } catch (err) {
         console.log(err)
+        milvusData = milvusData.concat([])
+        mongoData = mongoData.concat([])
       }
     } else if (item.type === 'file' && isSupportedFile(item.name)) {
       console.log(item.path)
       // This is a file, so we'll summarize, embed, and add to the vector
       // Get the commit SHA for this file
       const repoUUID = commitSha
-      // console.log(repoUUID)
+
       // Call the summarize function
       const {summary, original} = await summarize(
         openai,
@@ -62,26 +71,29 @@ const traverse = async (
         repo,
         item.path,
       )
-      // console.log(summary)
-      // console.log(original)
+
       // Call the embedding function
       const vector = await embedding(openai, summary)
-      // Call the addToMilvus function
+
+      // Generate a file UUID
       const fileUUID = uuidv4()
-      // console.log(fileUUID)
-      await addToMilvus(instance, vector, repoUUID, fileUUID)
-      // Finally, add to MongoDB
-      await insertData(
+
+      // Push the data to the arrays
+      milvusData.push({vector, repoUUID, fileUUID})
+      mongoData.push({
         repoUUID,
         fileUUID,
-        item.path,
-        item.html_url,
+        path: item.path,
+        fullpath: item.html_url,
         summary,
         original,
-        vector,
-      )
+        embedding: vector,
+      })
     }
   }
+
+  // Return the data
+  return {milvusData, mongoData}
 }
 
 const isSupportedFile = (filename) => {
@@ -115,10 +127,10 @@ const isSupportedFile = (filename) => {
   ]
 
   // Get the file extension
-  const ext = path.extname(filename);
+  const ext = path.extname(filename)
 
   // Return true if the file extension is in the array of supported extensions
-  return supportedExtensions.includes(ext);
-};
+  return supportedExtensions.includes(ext)
+}
 
-module.exports = traverse;
+module.exports = traverse
