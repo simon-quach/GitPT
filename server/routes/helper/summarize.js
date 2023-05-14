@@ -8,7 +8,6 @@ Creates a UUID for this file
 Stores path, summary, and original contents in mongodb under repository UUID
 */
 const summarize = async (openai, octokit, owner, repo, path) => {
-
   const gitResponse = await octokit.rest.repos.getContent({
     owner: owner,
     repo: repo,
@@ -28,7 +27,10 @@ const summarize = async (openai, octokit, owner, repo, path) => {
     messages: messages,
   })
 
-  return response.data.choices[0].message.content
+  return {
+    summary: response.data.choices[0].message.content,
+    original: contents,
+  }
 }
 
 module.exports = summarize

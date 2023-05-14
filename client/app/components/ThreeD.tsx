@@ -45,7 +45,6 @@ const ThreeD = () => {
       animate();
     }
   }, []);
-
   return <div ref={mountRef}></div>;
 };
 

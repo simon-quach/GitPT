@@ -8,6 +8,13 @@ Call summarize on each supported leaf
 Call embedding based on summary
 Call add to vector with embedding
 */
+const path = require('path')
+const getCommitSHA = require('./returntree')
+const summarize = require('./summarize')
+const embedding = require('./embedding')
+const {addToMilvus} = require('./milvus')
+const insertData = require('./mongodb')
+const {v4: uuidv4} = require('uuid')
 const traverse = async (openai, octokit, instance, owner, repo, path = '') => {
   const response = await octokit.repos.getContent({
     owner,
@@ -22,18 +29,30 @@ const traverse = async (openai, octokit, instance, owner, repo, path = '') => {
     } else if (item.type === 'file' && isSupportedFile(item.name)) {
       // This is a file, so we'll summarize, embed, and add to the vector
       try {
+        // Get the commit SHA for this file
         const repoUUID = await getCommitSHA(owner, repo)
-        const summary = await summarize(
+        // Call the summarize function
+        const {summary, original} = await summarize(
           openai,
           octokit,
           owner,
           repo,
           item.path,
-          repoUUID,
         )
+        // Call the embedding function
         const vector = await embedding(openai, summary)
-        const fileUUID = generateUUID() // Assuming generateUUID is a function to generate a unique ID
+        // Call the addToMilvus function
+        const fileUUID = uuidv4()
         await addToMilvus(instance, vector, repoUUID, fileUUID)
+        // Finally, add to MongoDB
+        await insertData(
+          repoUUID,
+          fileUUID,
+          item.path,
+          summary,
+          original,
+          vector,
+        )
       } catch (error) {
         console.error(`Error processing file ${item.path}:`, error)
       }
@@ -42,9 +61,42 @@ const traverse = async (openai, octokit, instance, owner, repo, path = '') => {
 }
 
 const isSupportedFile = (filename) => {
-  // Update this function to check if a file is supported based on its name or extension
-  // For now, let's assume all files are supported
-  return true
+  // Array of supported file extensions
+  const supportedExtensions = [
+    '.js',
+    '.py',
+    '.java',
+    '.cpp',
+    '.h',
+    '.cs',
+    '.swift',
+    '.m',
+    '.mm',
+    '.rb',
+    '.php',
+    '.go',
+    '.rs',
+    '.kt',
+    '.ts',
+    '.sh',
+    '.pl',
+    '.pm',
+    '.R',
+    '.scala',
+    '.html',
+    '.css',
+    '.xml',
+    '.json',
+    '.yaml',
+    '.yml',
+    '.md',
+  ]
+
+  // Get the file extension
+  const ext = path.extname(filename)
+
+  // Return true if the file extension is in the array of supported extensions
+  return supportedExtensions.includes(ext)
 }
 
 module.exports = traverse
