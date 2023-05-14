@@ -9,7 +9,7 @@ Call embedding based on summary
 Call add to vector with embedding
 */
 const path = require('path')
-const getCommitSHA = require('./returntree')
+const {getCommitSHA} = require('./returntree')
 const summarize = require('./summarize')
 const embedding = require('./embedding')
 const {addToMilvus} = require('./milvus')
@@ -28,34 +28,28 @@ const traverse = async (openai, octokit, instance, owner, repo, path = '') => {
       await traverse(openai, octokit, instance, owner, repo, item.path)
     } else if (item.type === 'file' && isSupportedFile(item.name)) {
       // This is a file, so we'll summarize, embed, and add to the vector
-      try {
-        // Get the commit SHA for this file
-        const repoUUID = await getCommitSHA(owner, repo)
-        // Call the summarize function
-        const {summary, original} = await summarize(
-          openai,
-          octokit,
-          owner,
-          repo,
-          item.path,
-        )
-        // Call the embedding function
-        const vector = await embedding(openai, summary)
-        // Call the addToMilvus function
-        const fileUUID = uuidv4()
-        await addToMilvus(instance, vector, repoUUID, fileUUID)
-        // Finally, add to MongoDB
-        await insertData(
-          repoUUID,
-          fileUUID,
-          item.path,
-          summary,
-          original,
-          vector,
-        )
-      } catch (error) {
-        console.error(`Error processing file ${item.path}:`, error)
-      }
+      // Get the commit SHA for this file
+      const repoUUID = await getCommitSHA(owner, repo)
+      console.log(repoUUID)
+      // Call the summarize function
+      const {summary, original} = await summarize(
+        openai,
+        octokit,
+        owner,
+        repo,
+        item.path,
+      )
+      console.log(summary)
+      console.log(original)
+      // Call the embedding function
+      const vector = await embedding(openai, summary)
+      // Call the addToMilvus function
+      const fileUUID = uuidv4()
+      console.log(fileUUID)
+      await addToMilvus(instance, vector, repoUUID, fileUUID)
+      // Finally, add to MongoDB
+      await insertData(repoUUID, fileUUID, item.path, summary, original, vector)
+      return 200
     }
   }
 }
