@@ -14,8 +14,9 @@ const generate = async (openai, mongo, milvus, question, repoUUID) => {
 
   console.log(fileUUIDs)
   // Get the contents of the files
-  const contents = await getdocs(mongo, repoUUID, fileUUIDs)
+  const files = await getdocs(mongo, repoUUID, fileUUIDs)
 
+  const contents = files.map((file) => file.content)
   // Generate summary
   const combined = contents.join('\n\n')
 

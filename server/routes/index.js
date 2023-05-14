@@ -4,16 +4,17 @@ var cors = require("cors");
 var dotenv = require("dotenv");
 dotenv.config();
 
-const extractNameAndProject = require("./helper/getinfo.js");
-const summarize = require("./helper/summarize.js");
-const embedding = require("./helper/embedding.js");
-const connectDB = require("./mongo/connect.js");
-const { getCommitSHA } = require("./helper/returntree.js");
-const traverse = require("./helper/traversal.js");
-const { addToMilvus, queryMilvus } = require("./helper/milvus");
-const insertData = require("./helper/mongodb");
-const breadcrumb = require("./helper/breadcrumb.js");
-const generate = require("./helper/generate.js");
+const extractNameAndProject = require('./helper/getinfo.js')
+const summarize = require('./helper/summarize.js')
+const embedding = require('./helper/embedding.js')
+const connectDB = require('./mongo/connect.js')
+const {getCommitSHA} = require('./helper/returntree.js')
+const traverse = require('./helper/traversal.js')
+const {addToMilvus, queryMilvus} = require('./helper/milvus')
+const insertData = require('./helper/mongodb')
+const breadcrumb = require('./helper/breadcrumb.js')
+const generate = require('./helper/generate.js')
+const getdocs = require('./helper/getdocs.js')
 
 // MongoDB Setup
 connectDB(process.env.MONGODB_URL);
@@ -194,4 +195,26 @@ router.post("/generate", async (req, res) => {
   }
 });
 
-module.exports = router;
+router.get('/breadcrumb/:repoUUID', async (req, res) => {
+  try {
+    const repoUUID = req.params.repoUUID
+    const paths = await breadcrumb(Repository, repoUUID)
+    res.json(paths)
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Server Error')
+  }
+})
+
+router.get('/getdocs/:repoUUID/:fileUUID', async (req, res) => {
+  try {
+    const {repoUUID, fileUUID} = req.params
+    const files = await getdocs(Repository, repoUUID, [fileUUID])
+    res.json(files[0])
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Server Error')
+  }
+})
+
+module.exports = router
