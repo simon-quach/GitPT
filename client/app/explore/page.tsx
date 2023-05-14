@@ -1,27 +1,25 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
+import {useEffect, useState} from 'react'
+import {useRouter} from 'next/navigation'
+import axios from 'axios'
 
 const Selection = () => {
-  const [repositories, setRepositories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [repositories, setRepositories] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get("https://api.art3m1s.me/gitpt/alldocs").then((response) => {
-      console.log(response.data);
-      setRepositories(response.data);
-      if (repositories.length > 0) {
-        setLoading(false);
-      }
-    });
-  }, []);
+    axios.get('https://api.art3m1s.me/gitpt/alldocs').then((response) => {
+      console.log(response.data)
+      setRepositories(response.data)
+      setLoading(false)
+    })
+  }, [])
 
-  const router = useRouter();
+  const router = useRouter()
   const onClick = (id: string) => {
-    router.push(`/explore/${id}`);
-  };
+    router.push(`/explore/${id}`)
+  }
 
   return (
     <div className="h-[calc(100vh-100px)] flex flex-col items-center">
@@ -45,7 +43,7 @@ const Selection = () => {
         <div>Loading...</div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Selection;
+export default Selection
