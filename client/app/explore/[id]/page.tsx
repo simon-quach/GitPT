@@ -142,27 +142,38 @@ const Repository = () => {
     setCurrentPath(keys.slice(0, index + 1).join("/"));
   };
 
+  const copyToClipboard = () => {
+    if (fileContents.contents) {
+      navigator.clipboard.writeText(fileContents.contents);
+    }
+  };
+
   return (
-    <div className="min-h-[calc(100vh-100px)] flex flex-col text-white px-[8rem]">
+    <div className="min-h-[calc(100vh-100px)] flex flex-col text-[#c8c8c8] px-[2rem] lg:px-[8rem]">
       <div className="text-left font-medium text-[12px]">
         {keys.map((key: string, index: number) => (
-          <span key={index} onClick={() => handleKeyClick(index)}>
-            {key} &gt;
+          <span
+            key={index}
+            onClick={() => handleKeyClick(index)}
+            className="cursor-pointer hover:text-white hover:font-bold"
+          >
+            {` ${key} `} &gt;
           </span>
         ))}
       </div>
       {fileType === "file" ? (
         <div className="">
-          <div className=" w-full h-[36rem] mt-[1rem] flex flex-col rounded-md overflow-hidden">
+          <div className="w-full lg:h-[36rem] mt-[1rem] flex flex-col rounded-md overflow-hidden">
             <div className="w-full h-[36px] flex items-center relative bg-[#1E2022]">
               <Image
                 src={Clipboard}
                 alt="clipboard"
                 className="absolute left-2"
+                onClick={copyToClipboard}
               />
             </div>
-            <div className="w-ful h-full flex">
-              <div className="bg-[#161718] w-[70%] text-[12px] px-[1rem] py-[1rem] overflow-y-auto">
+            <div className="w-full h-[calc(100%-36px)] flex lg:flex-row flex-col">
+              <div className="bg-[#161718] w-full lg:w-[70%] lg:h-full text-[12px] px-[1rem] py-[1rem] overflow-y-auto">
                 <div className="font-mono whitespace-pre-line">
                   {(fileContents.contents ? fileContents.contents : "")
                     .split("\n")
@@ -176,7 +187,7 @@ const Repository = () => {
                     })}
                 </div>
               </div>
-              <div className="bg-[#131315] w-[30%] flex flex-col items-center justify-between px-[2rem] py-[2rem]">
+              <div className="bg-[#131315] w-full lg:w-[30%] flex flex-col items-center justify-between gap-8 lg:gap-0 px-[2rem] py-[2rem]">
                 <div className="">
                   <div className="text-[#62a1ff] text-[8px]">File Name</div>
                   <div className="text-[16px]">
@@ -224,7 +235,7 @@ const Repository = () => {
               <div className="font-mono">
                 {dirContent.map((item, index) => (
                   <div key={index} onClick={() => handleItemClick(item.name)}>
-                    {item.type === "directory" && (
+                    {item.type === "directory" && item.name !== "" && (
                       <div className="flex items-center gap-2 border-b border-[#2D2D2D] py-3 cursor-pointer hover:bg-[#1d1e20]">
                         <Image src={Folder} alt="folder" className="" />
                         <div>{item.name}</div>
@@ -238,7 +249,7 @@ const Repository = () => {
                     onClick={() => handleItemClick(item.name)}
                     className=""
                   >
-                    {item.type === "file" && (
+                    {item.type === "file" && item.name !== "" && (
                       <div className="flex items-center gap-2 border-b border-[#2D2D2D] py-3 cursor-pointer hover:bg-[#1d1e20]">
                         <Image src={File} alt="file" className="" />
                         <div>{item.name}</div>
