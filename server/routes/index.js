@@ -204,12 +204,11 @@ router.get('/breadcrumb/:repoUUID', async (req, res) => {
   }
 })
 
-router.get('/getdocs/:repoUUID/:fileUUIDs', async (req, res) => {
+router.get('/getdocs/:repoUUID/:fileUUID', async (req, res) => {
   try {
-    const {repoUUID, fileUUIDs} = req.params
-    const fileUUIDsArray = fileUUIDs.split(',') // Assuming fileUUIDs are comma-separated in the URL
-    const contents = await getdocs(Repository, repoUUID, fileUUIDsArray)
-    res.json(contents)
+    const {repoUUID, fileUUID} = req.params
+    const files = await getdocs(Repository, repoUUID, [fileUUID])
+    res.json(files[0])
   } catch (err) {
     console.error(err)
     res.status(500).send('Server Error')

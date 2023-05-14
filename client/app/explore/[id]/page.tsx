@@ -1,91 +1,116 @@
-"use client";
+'use client'
 
-import Clipboard from "../../assets/icons/clipboard.svg";
-import Github from "../../assets/icons/github.svg";
-import Image from "next/image";
-import Router from "next/router";
-import { use, useEffect, useState } from "react";
-import axios from "axios";
+import Clipboard from '../../assets/icons/clipboard.svg'
+import Github from '../../assets/icons/github.svg'
+import Image from 'next/image'
+import Router from 'next/router'
+import {use, useEffect, useState} from 'react'
+import axios, {AxiosResponse} from 'axios'
 
 interface PathObject {
-  path: string;
-  uuid: string;
+  path: string
+  uuid: string
 }
 
 interface TreeNode {
-  uuid?: string;
-  type: string;
-  children?: { [key: string]: TreeNode };
+  uuid?: string
+  type: string
+  name: string
+  children?: {[key: string]: TreeNode}
 }
 
 interface Tree {
-  [key: string]: TreeNode;
+  [key: string]: TreeNode
 }
 
-function generateTree(paths: PathObject[]): { [key: string]: TreeNode } {
-  let tree: { [key: string]: TreeNode } = {};
+interface FileObject {
+  _id: string
+  path: string
+  fullpath: string
+  summary: string
+  contents: string
+  embedding: [number]
+}
+
+function generateTree(paths: PathObject[]): {[key: string]: TreeNode} {
+  let tree: {[key: string]: TreeNode} = {}
   paths.forEach((pathObj) => {
-    let parts = pathObj.path.split("/");
-    let subtree: { [key: string]: TreeNode } | undefined = tree;
+    let parts = pathObj.path.split('/')
+    let subtree: {[key: string]: TreeNode} | undefined = tree
     parts.forEach((part, index) => {
       if (!subtree![part]) {
         if (index === parts.length - 1) {
           // This is a file, not a directory
-          subtree![part] = { uuid: pathObj.uuid, type: "file" };
+          subtree![part] = {uuid: pathObj.uuid, type: 'file', name: part}
         } else {
           // This is a directory
-          subtree![part] = { type: "directory", children: {} };
+          subtree![part] = {type: 'directory', children: {}, name: part}
         }
       }
       if (index !== parts.length - 1) {
-        subtree = subtree![part].children;
+        subtree = subtree![part].children
       }
-    });
-  });
-  return tree;
+    })
+  })
+  return tree
 }
 
 const Repository = () => {
-  const { id } = Router.query;
-  const [tree, setTree] = useState<Tree>({});
-  const [currentPath, setCurrentPath] = useState("");
-  const [fileType, setFileType] = useState("directory");
-
-  let keys = currentPath.split("/");
+  const {id} = Router.query
+  const [tree, setTree] = useState<Tree>({})
+  const [currentPath, setCurrentPath] = useState('')
+  const [fileType, setFileType] = useState('directory')
+  const [fileContents, setFileContents] = useState<FileObject>({})
+  let keys = currentPath.split('/')
 
   function getLeafObject(keys: string[]) {
-    let subtree: Tree = tree;
-    let leaf: TreeNode | null = null;
+    let subtree: Tree = tree
+    let leaf: TreeNode | null = null
     for (let i = 0; i < keys.length; i++) {
       if (subtree[keys[i]]) {
-        leaf = subtree[keys[i]];
-        subtree = subtree[keys[i]].children!;
+        leaf = subtree[keys[i]]
+        subtree = subtree[keys[i]].children!
       } else {
-        return null;
+        return null
       }
     }
-    return leaf;
+    return leaf
   }
-
-  const leaf = getLeafObject(keys);
 
   useEffect(() => {
     if (!id) {
-      Router.push("/");
+      Router.push('/')
     }
-    axios.get(`http://localhost:3000/breadcrumb/${id}`).then((res) => {
-      setTree(generateTree(JSON.parse(res.data)));
-    });
-  }, [id]);
+    axios
+      .get(`http://localhost:3000/breadcrumb/${id}`)
+      .then((res: AxiosResponse<any>) => {
+        setTree(generateTree(JSON.parse(res.data)))
+      })
+  }, [id])
 
-  useEffect(() => {}, [currentPath]);
+  useEffect(() => {
+    const leaf = getLeafObject(keys)
+    if (leaf) {
+      if (leaf.type === 'file') {
+        axios
+          .get(`http://localhost:3000/getdocs/${id}/${leaf.uuid}`)
+          .then((res: AxiosResponse<any>) => {
+            setFileContents(res.data)
+            setFileType('file')
+          })
+      } else {
+        setFileType('directory')
+        setFileContents({})
+      }
+    }
+  }, [currentPath])
 
   return (
     <div className="min-h-[calc(100vh-100px)] flex flex-col text-white px-[8rem]">
-      {leaf.type === "file" ? (
+      {fileType === 'file' ? (
         <div className="">
           <div className="text-left font-medium text-[12px]">
-            {keys.map((key, index) => (
+            {keys.map((key: string, index: number) => (
               <span key={index}>{key} &gt;</span>
             ))}
           </div>
@@ -100,38 +125,26 @@ const Repository = () => {
             <div className="w-ful h-full flex">
               <div className="bg-[#161718] w-[70%] text-[12px] px-[1rem] py-[1rem]">
                 <div className="font-mono">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nostrum eligendi non modi animi! A, officia modi, et molestiae
-                  similique ut distinctio qui dolor eaque numquam illo unde.
-                  Perspiciatis, facilis et. <br />
-                  <br />
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nostrum eligendi non modi animi! A, officia modi, et molestiae
-                  similique ut distinctio qui dolor eaque numquam illo unde.
-                  Perspiciatis, facilis et. <br />
-                  <br />
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nostrum eligendi non modi animi! A, officia modi, et molestiae
-                  similique ut distinctio qui dolor eaque numquam illo unde.
-                  Perspiciatis, facilis et. <br />
-                  <br />
+                  {fileContents.contents ? fileContents.contents : ''}
                 </div>
               </div>
               <div className="bg-[#131315] w-[30%] flex flex-col items-center justify-between px-[2rem] py-[2rem]">
                 <div className="">
                   <div className="text-[#62a1ff] text-[8px]">File Name</div>
-                  <div className="text-[16px]">page.tsx</div>
+                  <div className="text-[16px]">
+                    {fileContents.path
+                      ? fileContents.path.split('/').pop()
+                      : ''}
+                  </div>
                   <br />
                   <div className="text-[#62a1ff] text-[8px]">Path</div>
-                  <div className="text-[12px]">client/app/page.tsx</div>
+                  <div className="text-[12px]">
+                    {fileContents.path ? fileContents.path : ''}
+                  </div>
                   <br />
                   <div className="text-[#62a1ff] text-[8px]">Summary</div>
                   <div className="text-[12px]">
-                    This is a React component called "Home" which exports a main
-                    element containing a fixed ThreeD component and a div
-                    element containing some text. The div element is styled
-                    using tailwindcss classes to set the color, font size, and
-                    alignment of the text.
+                    {fileContents.summary ? fileContents.summary : ''}
                   </div>
                 </div>
                 <div className="font-bold group flex items-center justify-center gap-2 bg-white text-[#1B1C1E] px-[1rem] py-[0.5rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all">
@@ -150,7 +163,7 @@ const Repository = () => {
         <></>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Repository;
+export default Repository
