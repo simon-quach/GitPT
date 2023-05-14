@@ -14,12 +14,12 @@ const addToMilvus = async (instance, milvusData) => {
     return {
       fileUUID,
       vector,
+      repoUUID,
     }
   })
 
   const data = {
     collection_name: 'Github',
-    partitionName: repoUUID,
     fields_data: fields,
   }
 
@@ -37,15 +37,15 @@ const queryMilvus = async (instance, vector, repoUUID) => {
 
   const query = {
     collection_name: 'Github',
-    partition_names: [repoUUID],
     vectors: [vector],
     search_params: searchParams,
     vector_type: DataType.FloatVector,
+    expr: `repoUUID == "${repoUUID}"`,
     output_fields: ['fileUUID'],
   }
 
   const response = await instance.search(query)
-  return response
+  return response.results
 }
 
 module.exports = {addToMilvus, queryMilvus}
