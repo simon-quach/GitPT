@@ -1,9 +1,9 @@
 'use client'
 
-import Clipboard from '../../assets/icons/clipboard.svg'
-import Github from '../../assets/icons/github.svg'
+import Clipboard from '../../../assets/icons/clipboard.svg'
+import Github from '../../../assets/icons/github.svg'
 import Image from 'next/image'
-import Router from 'next/router'
+import {useParams} from 'next/navigation'
 import {useEffect, useState} from 'react'
 import axios, {AxiosResponse} from 'axios'
 
@@ -35,11 +35,13 @@ interface FileObject {
 function generateTree(paths: PathObject[]): {[key: string]: TreeNode} {
   let tree: {[key: string]: TreeNode} = {}
   paths.forEach((pathObj) => {
-    let parts = pathObj.path.split('/')
+    // Ensure the path starts with a '/' character
+    let path = pathObj.path.startsWith('/') ? pathObj.path : '/' + pathObj.path
+    let parts = path.split('/')
     let subtree: {[key: string]: TreeNode} | undefined = tree
     parts.forEach((part, index) => {
       if (!subtree![part]) {
-        if (index === parts.length - 1) {
+        if (index === parts.length - 1 && pathObj.path !== '/') {
           // This is a file, not a directory
           subtree![part] = {uuid: pathObj.uuid, type: 'file', name: part}
         } else {
@@ -65,14 +67,16 @@ const emptyFileObject: FileObject = {
 }
 
 const Repository = () => {
-  const {id} = Router.query
+  const params = useParams()
+  const id = params.id
   const [tree, setTree] = useState<Tree>({})
   const [currentPath, setCurrentPath] = useState('')
   const [fileType, setFileType] = useState('directory')
   const [fileContents, setFileContents] = useState<FileObject>(emptyFileObject)
+  const [dirContent, setDirContent] = useState<TreeNode[]>([])
   let keys = currentPath.split('/')
 
-  function getLeafObject(keys: string[]) {
+  function getCurrentNode(keys: string[]) {
     let subtree: Tree = tree
     let leaf: TreeNode | null = null
     for (let i = 0; i < keys.length; i++) {
@@ -87,32 +91,37 @@ const Repository = () => {
   }
 
   useEffect(() => {
-    if (!id) {
-      Router.push('/')
-    }
     axios
       .get(`http://localhost:3000/breadcrumb/${id}`)
       .then((res: AxiosResponse<any>) => {
-        setTree(generateTree(JSON.parse(res.data)))
+        const tree = generateTree(res.data)
+        console.log(tree)
+        setTree(tree)
       })
   }, [id])
 
   useEffect(() => {
-    const leaf = getLeafObject(keys)
-    if (leaf) {
+    const leaf = getCurrentNode(keys)
+    if (leaf && tree) {
       if (leaf.type === 'file') {
         axios
           .get(`http://localhost:3000/getdocs/${id}/${leaf.uuid}`)
           .then((res: AxiosResponse<any>) => {
             setFileContents(res.data)
             setFileType('file')
+            setDirContent([])
           })
       } else {
         setFileType('directory')
         setFileContents(emptyFileObject)
+        setDirContent(Object.values(leaf.children!))
       }
     }
-  }, [currentPath])
+  }, [currentPath, tree])
+
+  const handleItemClick = (name: string) => {
+    setCurrentPath((prevPath) => `${prevPath}/${name}`)
+  }
 
   return (
     <div className="min-h-[calc(100vh-100px)] flex flex-col text-white px-[8rem]">
@@ -169,7 +178,13 @@ const Repository = () => {
           </div>
         </div>
       ) : (
-        <></>
+        <div>
+          {dirContent.map((item, index) => (
+            <div key={index} onClick={() => handleItemClick(item.name)}>
+              {item.name}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   )
