@@ -217,4 +217,24 @@ router.get('/getdocs/:repoUUID/:fileUUID', async (req, res) => {
   }
 })
 
+router.get('/alldocs', async (req, res) => {
+  try {
+    const files = await Repository.find({})
+    const ids = []
+    files.forEach((file) => {
+      const metadata = file.files.get('metadata')
+      const obj = {
+        id: file._id,
+        name: metadata.fullpath.split('/').pop(),
+        description: metadata.summary,
+      }
+      ids.push(obj)
+    })
+    res.json(ids)
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Server Error')
+  }
+})
+
 module.exports = router
