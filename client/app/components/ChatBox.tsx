@@ -1,22 +1,22 @@
-'use client'
-import {FormEvent} from 'react'
-import ChatPFP from '../../assets/icons/chat-pfp.svg'
-import Send from '../../assets/icons/send.svg'
-import Image from 'next/image'
+"use client";
+import { FormEvent } from "react";
+import ChatPFP from "../../assets/icons/chat-pfp.svg";
+import Send from "../../assets/icons/send.svg";
+import Image from "next/image";
 
 type ChatBoxProps = {
-  input: string
-  setInput: (input: string) => void
-  conversations: {role: 'bot' | 'user'; message: string}[]
+  input: string;
+  setInput: (input: string) => void;
+  conversations: { role: "bot" | "user"; message: string }[];
   setConversations: (
-    conversations: {role: 'bot' | 'user'; message: string}[],
-  ) => void
-}
+    conversations: { role: "bot" | "user"; message: string }[]
+  ) => void;
+};
 
 type Message = {
-  role: 'bot' | 'user'
-  message: string
-}
+  role: "bot" | "user";
+  message: string;
+};
 
 export const ChatBox: React.FC<ChatBoxProps> = ({
   input,
@@ -25,14 +25,14 @@ export const ChatBox: React.FC<ChatBoxProps> = ({
   setConversations,
 }) => {
   const submitHandler = (e: FormEvent) => {
-    e.preventDefault()
-    setConversations([...conversations, {role: 'user', message: input}])
-    setInput('')
-  }
+    e.preventDefault();
+    setConversations([...conversations, { role: "user", message: input }]);
+    setInput("");
+  };
 
   const updateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value)
-  }
+    setInput(e.target.value);
+  };
 
   return (
     <main className="w-[60rem] h-[35rem] bg-[#ffffff] rounded-md z-10 fixed bottom-[8rem] right-8 overflow-hidden flex flex-col items-center">
@@ -40,19 +40,19 @@ export const ChatBox: React.FC<ChatBoxProps> = ({
         {conversations.map((msg: Message, index: number) => (
           <div
             key={index}
-            className={`h-[4rem] ${
-              msg.role === 'bot' ? 'bg-[#ededed]' : 'bg-[#ffffff]'
+            className={`min-h-[4rem] py-[2rem] ${
+              msg.role === "bot" ? "bg-[#ededed]" : "bg-[#ffffff]"
             } w-full flex items-center px-[2rem]`}
           >
-            {msg.role === 'bot' && <Image src={ChatPFP} alt="chat-pfp" />}
+            {msg.role === "bot" && <Image src={ChatPFP} alt="chat-pfp" />}
             <div
               className={`font-medium ${
-                msg.role === 'bot' ? 'ml-[1rem]' : 'ml-auto mr-[1rem]'
+                msg.role === "bot" ? "ml-[1rem]" : "ml-auto mr-[1rem]"
               }`}
             >
               {msg.message}
             </div>
-            {msg.role === 'user' && (
+            {msg.role === "user" && (
               <Image src={ChatPFP} alt="chat-pfp" className="ml-[1rem]" />
             )}
           </div>
@@ -79,5 +79,5 @@ export const ChatBox: React.FC<ChatBoxProps> = ({
         </button>
       </form>
     </main>
-  )
-}
+  );
+};
