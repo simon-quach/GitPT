@@ -178,6 +178,8 @@ router.post('/generate', async (req, res) => {
     // Assuming the request body contains 'instance', 'question', and 'repoUUID'
     const {question, repoUUID} = req.body
 
+    console.log(question)
+
     const response = await generate(
       openai,
       Repository,
