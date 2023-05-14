@@ -10,6 +10,7 @@ async function insertData(
   repoUuid,
   fileUuid,
   path,
+  fullpath,
   summary,
   original,
   embedding,
@@ -18,6 +19,7 @@ async function insertData(
   const fileData = {
     _id: fileUuid,
     path,
+    fullpath,
     summary,
     contents: original,
     embedding,
@@ -30,7 +32,6 @@ async function insertData(
     {new: true, upsert: true},
   )
     .then((doc) => {
-      console.log('Successfully inserted data:', doc)
       return 200
     })
     .catch((err) => {

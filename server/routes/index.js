@@ -32,7 +32,6 @@ const openai = new OpenAIApi(configuration)
 
 // Github API
 const {Octokit} = require('@octokit/rest')
-const {connect} = require('mongoose')
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 })

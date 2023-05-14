@@ -4,7 +4,7 @@ const addToMilvus = async (instance, vector, repoUUID, fileUUID) => {
   const data = {
     collection_name: 'Github',
     partitionName: repoUUID,
-    fieldsData: [
+    fields_data: [
       {
         fileUUID: fileUUID,
         vector: vector,
