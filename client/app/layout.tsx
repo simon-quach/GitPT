@@ -44,10 +44,10 @@ export default function RootLayout({
               About
             </Link>
             <Link
-              href="/chat"
-              className="font-bold bg-white text-[#1B1C1E] px-[1.5rem] py-[1rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white border-[1px] transition-all"
+              href="/explore"
+              className="font-bold bg-white text-[#1B1C1E] px-[1.5rem] py-[1rem] rounded-md cursor-pointer hover:bg-[rgba(0,0,0,0)] hover:text-white hover:fill-white border-[1px] transition-all"
             >
-              Start Chatting
+              Explore Repo
             </Link>
           </div>
         </nav>
