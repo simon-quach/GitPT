@@ -136,13 +136,6 @@ router.post('/query', async (req, res) => {
     }
 
     const vector = await embedding(openai, text)
-    // Save vector as plain text in txt
-    fs = require('fs')
-    fs.writeFile('vector.txt', vector.toString(), function (err) {
-      if (err) return console.log(err)
-      console.log('Vector saved in vector.txt')
-    })
-
     const results = await queryMilvus(milvusClient, vector, repoUUID)
     return res.status(200).json(results)
   } catch (error) {
