@@ -1,41 +1,41 @@
-import Audrey from "../../assets/pictures/audrey.jpg";
-import Bill from "../../assets/pictures/bill.jpg";
-import Simon from "../../assets/pictures/simon.jpg";
-import Wilson from "../../assets/pictures/wilson.jpg";
+import Audrey from '../../assets/pictures/audrey.jpg'
+import Bill from '../../assets/pictures/bill.jpg'
+import Simon from '../../assets/pictures/simon.jpg'
+import Wilson from '../../assets/pictures/wilson.jpg'
 
-import Image from "next/image";
+import Image from 'next/image'
 
 export default function About() {
   const team = [
     {
-      name: "Simon Quach",
-      school: "UCSD",
-      major: "Math-CS",
-      role: "Full Stack",
+      name: 'Simon Quach',
+      school: 'UCSD',
+      major: 'Math-CS',
+      role: 'Full Stack',
       img: Simon,
     },
     {
-      name: "Audrey Chen",
-      school: "MSU",
-      major: "CE",
-      role: "Frontend",
+      name: 'Audrey Chen',
+      school: 'MSU',
+      major: 'CE',
+      role: 'Frontend',
       img: Audrey,
     },
     {
-      name: "Bill Zhang",
-      school: "USC",
-      major: "CS",
-      role: "Full Stack",
+      name: 'Bill Zhang',
+      school: 'USC',
+      major: 'CS',
+      role: 'Full Stack',
       img: Bill,
     },
     {
-      name: "Wilson Lau",
-      school: "UCSB",
-      major: "CS",
-      role: "Backend",
+      name: 'Wilson Lau',
+      school: 'UCSB',
+      major: 'CS',
+      role: 'Backend',
       img: Wilson,
     },
-  ];
+  ]
   return (
     <div className="font-lexend-deca h-[calc(100vh-80px) pt-[64px] flex justify-center">
       <div className="flex flex-col justify-center items-center mx-[5%] sm:mx-[10%] cursor-default">
@@ -51,7 +51,7 @@ export default function About() {
             >
               <Image
                 src={member.img}
-                alt={member.img}
+                alt={member.name}
                 className="max-w-[150px] h-auto rounded-full"
               />
               <div className="mt-[12px] flex flex-col justify-center items-center">
@@ -73,5 +73,5 @@ export default function About() {
         </div>
       </div>
     </div>
-  );
+  )
 }

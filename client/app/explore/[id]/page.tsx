@@ -27,6 +27,11 @@ interface Tree {
   [key: string]: TreeNode
 }
 
+type Message = {
+  role: 'bot' | 'user'
+  message: string
+}
+
 interface FileObject {
   _id: string
   path: string
@@ -81,7 +86,7 @@ const Repository = () => {
   const [metaData, setMetaData] = useState<FileObject>(emptyFileObject)
   const [chat, setChat] = useState(false)
   const [question, setQuestion] = useState('')
-  const [conversations, setConversations] = useState([
+  const [conversations, setConversations] = useState<Message[]>([
     {
       role: 'bot',
       message: 'Hello, what questions do you have?',

@@ -1,12 +1,12 @@
-import ThreeD from "./components/ThreeD";
-import { Ellipsis } from "react-css-spinners";
+import ThreeD from './components/ThreeD'
+import {Ellipsis} from 'react-css-spinners'
 
 export default function Home() {
-  const Loader = (props) => (
-    <>
-      <Ellipsis />
-    </>
-  );
+  // const Loader = (props) => (
+  //   <>
+  //     <Ellipsis />
+  //   </>
+  // );
 
   return (
     <main className="min-h-[calc(100vh-100px)] flex flex-col items-center text-white mt-[4rem]">
@@ -21,5 +21,5 @@ export default function Home() {
         <div className="">Decoding Complex Codebases, One Chat at a Time</div>
       </div>
     </main>
-  );
+  )
 }
